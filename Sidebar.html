@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Slides Sidebar - ShadCN with Hamburger Menu Sidebar</title>
+    <style>
+        /* ShadCN-inspired CSS with Google Slides accent */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f9fafb;
+            padding: 16px;
+            margin: 0;
+        }
+        .sidebar-container {
+            width: 300px;
+            max-width: 100%;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 16px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-height: 90vh;
+            overflow-x: hidden;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            gap: 8px;
+            width: 100%;
+            overflow: hidden;
+        }
+        .hamburger-menu {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #6b7280;
+            cursor: pointer;
+            margin-right: 12px;
+        }
+        .header-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #374151;
+            flex-shrink: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 60px;
+        }
+        .header-dropdown {
+            padding: 4px 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            background: #f9fafb;
+            font-size: 14px;
+            color: #374151;
+            transition: all 0.2s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 4px center;
+            background-size: 12px;
+        }
+        .header-dropdown:hover {
+            border-color: #4285f4;
+        }
+        .header-dropdown:focus {
+            outline: none;
+            border-color: #4285f4;
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+        }
+        .hamburger-sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100vh;
+            background: #ffffff;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+            transition: left 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+        .hamburger-sidebar.active {
+            left: 0;
+        }
+        .hamburger-sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .hamburger-sidebar-content {
+            padding: 16px;
+            overflow-y: auto;
+        }
+        .hamburger-sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+        .hamburger-sidebar-item:hover {
+            background-color: #f3f4f6;
+        }
+        .hamburger-sidebar-item i {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+        .hamburger-sidebar-item span {
+            font-size: 14px;
+            color: #374151;
+        }
+        .close-hamburger {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #6b7280;
+            cursor: pointer;
+        }
+        .hamburger-sidebar-footer {
+            margin-top: auto;
+            padding: 16px;
+            font-size: 12px;
+            color: #78909c;
+        }
+        .hamburger-sidebar-footer a {
+            color: #4fc3f7;
+            text-decoration: none;
+        }
+        .hamburger-sidebar-footer a:hover {
+            text-decoration: underline;
+        }
+        .settings-section {
+            padding: 12px;
+            border: 1px solid #455a64;
+            border-radius: 6px;
+            background: #263535;
+        }
+        .settings-label {
+            font-size: 12px;
+            color: #b0bec5;
+            margin-bottom: 4px;
+        }
+        .settings-input {
+            width: 100%;
+            padding: 8px 16px;
+            border: none;
+            border-bottom: 1px solid #455a64;
+            background: #1a2526;
+            font-size: 14px;
+            color: #b0bec5;
+            transition: border-color 0.2s ease;
+        }
+        .settings-input:focus {
+            outline: none;
+            border-bottom: 2px solid #4fc3f7;
+        }
+        .settings-input::placeholder {
+            color: #78909c;
+        }
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            margin-top: 8px;
+        }
+        .toggle-label {
+            font-size: 14px;
+            color: #b0bec5;
+            margin-left: 8px;
+        }
+        .shadcn-dropdown {
+            width: 100%;
+            padding: 8px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            font-size: 14px;
+            color: #374151;
+            transition: all 0.2s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 16px;
+        }
+        .shadcn-dropdown:hover {
+            border-color: #4285f4;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .shadcn-dropdown:focus {
+            outline: none;
+            border-color: #4285f4;
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+        }
+        .shadcn-input {
+            width: 100%;
+            padding: 8px 16px;
+            margin-top: 12px;
+            border: none;
+            border-bottom: 1px solid #e2e8f0;
+            background: #ffffff;
+            font-size: 15px;
+            color: #374151;
+            transition: border-color 0.2s ease;
+        }
+        .shadcn-input:focus {
+            outline: none;
+            border-bottom: 2px solid #4285f4;
+        }
+        .shadcn-input::placeholder {
+            color: #9ca3af;
+        }
+        .shadcn-button {
+            width: 100%;
+            padding: 10px 16px;
+            margin-top: 12px;
+            border: none;
+            border-radius: 6px;
+            background: #4285f4;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            transition: background 0.2s ease;
+        }
+        .shadcn-button:hover {
+            background: #3267d6;
+            cursor: pointer;
+        }
+        .shadcn-button:active {
+            background: #1a73e8;
+        }
+        .shadcn-button:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background: #374151;
+            color: #ffffff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        .char-counter {
+            font-size: 12px;
+            color: #6b7280;
+            text-align: right;
+            margin-top: 4px;
+        }
+        .char-counter.near-limit {
+            color: #dc2626;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-top: 16px;
+            cursor: pointer;
+        }
+        .chevron {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        .preview-section {
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: #f9fafb;
+        }
+        .preview-slide {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            background: #ffffff;
+        }
+        .preview-thumbnail {
+            width: 40px;
+            height: 30px;
+            border: 1px solid #d1d5db;
+            border-radius: 2px;
+            margin-right: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #6b7280;
+        }
+        .suggestion-section {
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: #fefcbf;
+        }
+        .suggestion-carousel {
+            display: flex;
+            overflow-x: auto;
+            gap: 8px;
+            padding: 8px 0;
+            scrollbar-width: none;
+        }
+        .suggestion-item {
+            flex: 0 0 auto;
+            padding: 8px;
+            border: 1px solid #fde68a;
+            border-radius: 4px;
+            background: #ffffff;
+            font-size: 14px;
+            color: #92400e;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 200px;
+        }
+        .carousel-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+        }
+        .carousel-arrow {
+            padding: 4px 12px;
+            border: none;
+            border-radius: 4px;
+            background: #e2e8f0;
+            color: #6b7280;
+            font-size: 12px;
+            transition: background 0.2s ease;
+        }
+        .carousel-arrow:hover {
+            background: #cbd5e1;
+            cursor: pointer;
+        }
+        .shadcn-small-button {
+            padding: 4px 12px;
+            border: none;
+            border-radius: 4px;
+            background: #4285f4;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 500;
+            transition: background 0.2s ease;
+        }
+        .shadcn-small-button:hover {
+            background: #3267d6;
+            cursor: pointer;
+        }
+        .edit-section {
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: #e5e7eb;
+        }
+        .edit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+        .lock-icon {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid #4285f4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .alert {
+            padding: 8px;
+            border: 1px solid #f87171;
+            border-radius: 4px;
+            background: #fef2f2;
+            color: #dc2626;
+            font-size: 12px;
+            margin-top: 12px;
+            display: none;
+        }
+        .footer {
+            margin-top: auto;
+            padding-top: 16px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            font-size: 12px;
+            color: #6b7280;
+        }
+        .footer a {
+            color: #4285f4;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        .settings-step {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+        .step-indicator {
+            font-size: 14px;
+            font-weight: 500;
+            color: #4285f4;
+            margin-bottom: 8px;
+        }
+        .topic-item .shadcn-input {
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            margin-top: 0;
+        }
+        .settings-step.active {
+            border-color: #4285f4;
+        }
+        .model-selector {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: auto;
+            max-width: 60%;
+        }
+        .model-dropdown {
+            padding: 6px 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: #f8fafc;
+            font-size: 13px;
+            color: #1e293b;
+            cursor: pointer;
+            min-width: 140px;
+            max-width: 65%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .buy-pack-button {
+            padding: 6px 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: #ffffff;
+            color: #4b5563;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .buy-pack-button:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+        .api-keys-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 360px;
+            height: 100vh;
+            background: #ffffff;
+            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+            transition: right 0.3s ease;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .api-keys-panel.active {
+            right: 0;
+        }
+        .api-keys-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            background: #ffffff;
+        }
+        .api-keys-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+        }
+        .close-panel {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 4px;
+        }
+        .api-keys-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+        .api-key-item {
+            padding: 16px;
+            border-bottom: 1px solid #e5e7eb;
+            background: #ffffff;
+        }
+        .api-key-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .provider-logo {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            object-fit: contain;
+        }
+        .api-key-label span {
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+        }
+        .api-key-input {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .api-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #374151;
+            background: #f9fafb;
+            font-family: monospace;
+        }
+        .api-input::placeholder {
+            color: #9ca3af;
+        }
+        .save-key {
+            padding: 8px 16px;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            color: #374151;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .save-key:hover {
+            background: #e5e7eb;
+        }
+        .beta-badge {
+            padding: 2px 6px;
+            background: #f3f4f6;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            color: #6b7280;
+            text-transform: uppercase;
+        }
+        .api-key-notice {
+            margin-top: 12px;
+            font-size: 12px;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+    </style>
+    <!-- Google Apps Script includes -->
+    <?!= HtmlService.createHtmlOutput().getContent(); ?>
+    <script>
+        // Function to call server-side code
+        function generateSlidesFromServer(params) {
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    if (result.success) {
+                        // Hide loading state
+                        document.querySelector('.spinner').style.display = 'none';
+                        // Show success message or update UI
+                    } else {
+                        // Show error message
+                        const alert = document.querySelector('.alert');
+                        alert.textContent = result.message;
+                        alert.style.display = 'block';
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    console.error('Failed to generate slides:', error);
+                    const alert = document.querySelector('.alert');
+                    alert.textContent = 'Failed to generate slides. Please try again.';
+                    alert.style.display = 'block';
+                })
+                .generateSlides(params);
+        }
+
+        function saveApiKeyToServer(provider, apiKey) {
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    if (result.success) {
+                        const button = document.querySelector(`[data-provider="${provider}"] .save-key`);
+                        button.textContent = 'Saved!';
+                        setTimeout(() => {
+                            button.textContent = 'Save';
+                        }, 2000);
+                    } else {
+                        // Show error
+                        console.error('Failed to save API key:', result.message);
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    console.error('Error saving API key:', error);
+                })
+                .saveApiKey(provider, apiKey);
+        }
+
+        function loadApiKeys() {
+            const providers = ['openai', 'perplexity', 'xai', 'anthropic', 'gemini', 'openrouter', 'deepseek'];
+            providers.forEach(provider => {
+                google.script.run
+                    .withSuccessHandler(function(result) {
+                        if (result.success && result.apiKey) {
+                            const input = document.querySelector(`[data-provider="${provider}"] .api-input`);
+                            if (input) {
+                                input.value = result.apiKey;
+                            }
+                        }
+                    })
+                    .getApiKey(provider);
+            });
+        }
+
+        function updateModelPreferenceOnServer(model) {
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    if (!result.success) {
+                        console.error('Failed to update model preference:', result.message);
+                    }
+                })
+                .updateModelPreference(model);
+        }
+
+        // Load saved model preference on startup
+        function loadModelPreference() {
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    if (result.success) {
+                        const modelDropdown = document.querySelector('.model-dropdown');
+                        if (modelDropdown) {
+                            modelDropdown.value = result.model;
+                        }
+                    }
+                })
+                .getModelPreference();
+        }
+    </script>
+</head>
+<body>
+    <div class="sidebar-container">
+        <!-- Header with Hamburger Menu and Model Selector -->
+        <div class="header">
+            <button class="hamburger-menu">☰</button>
+            <span class="header-title">Slide Generator</span>
+            <div class="model-selector">
+                <select class="model-dropdown">
+                    <option value="gpt-3.5-turbo">🤖 gpt-3.5-turbo</option>
+                    <option value="gpt-4o">🤖 gpt-4o</option>
+                    <option value="gpt-4o-mini">🤖 gpt-4o-mini</option>
+                    <option value="o1-mini">🤖 o1-mini</option>
+                    <option value="o3-mini">🤖 o3-mini</option>
+                    <option value="o1">🤖 o1</option>
+                    <option value="sonar">🌟 sonar (perplexity)</option>
+                    <option value="claude-3.5-sonnet">🎭 claude-3.5-sonnet</option>
+                </select>
+                <button class="buy-pack-button">Buy a pack</button>
+            </div>
+        </div>
+
+        <!-- Hamburger Sidebar -->
+        <div class="hamburger-sidebar" id="hamburgerSidebar">
+            <div class="hamburger-sidebar-header">
+                <span>Menu</span>
+                <button class="close-hamburger">×</button>
+            </div>
+            <div class="hamburger-sidebar-content">
+                <div class="hamburger-sidebar-item">
+                    <i>🏠</i>
+                    <span>Home</span>
+                </div>
+                <div class="hamburger-sidebar-item">
+                    <i>📊</i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="hamburger-sidebar-item" id="apiKeysMenuItem">
+                    <i>🔑</i>
+                    <span>API Keys</span>
+                </div>
+                <div class="hamburger-sidebar-item">
+                    <i>❓</i>
+                    <span>Help</span>
+                </div>
+                <div class="hamburger-sidebar-item">
+                    <i>⚙️</i>
+                    <span>Settings</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add overlay div -->
+        <div class="overlay"></div>
+
+        <!-- Dropdown with Tooltip -->
+        <div class="tooltip">
+            <select class="shadcn-dropdown">
+                <option value="pitch-deck">Pitch Deck</option>
+                <option value="course">Course</option>
+                <option value="lead-magnet">Lead Magnet</option>
+            </select>
+            <span class="tooltip-text">Select a slide type: Pitch Deck for startups, Course for education, Lead Magnet for marketing.</span>
+        </div>
+
+        <!-- Text Input with Refined Style -->
+        <input type="text" class="shadcn-input" placeholder="E.g., 'Title slide, then problem statement'" maxlength="200">
+        <div class="char-counter">42/200</div>
+
+        <!-- Multi-step Settings -->
+        <div class="section-header" style="margin-top: 20px;">
+            <span>Additional Settings</span>
+            <span class="chevron">▼</span>
+        </div>
+
+        <!-- Step 1: Keywords -->
+        <div class="settings-step active">
+            <div class="step-indicator">Step 1 of 3: Keywords</div>
+            <input type="text" class="shadcn-input" placeholder="Enter main keywords (comma separated)" style="margin-top: 8px;">
+            <div class="tooltip" style="margin-top: 4px;">
+                <span class="tooltip-text" style="font-size: 11px;">Add keywords that best describe your content (e.g., 'AI, Machine Learning, Future')</span>
+            </div>
+            <button class="shadcn-small-button" style="margin-top: 12px; width: auto;">Next →</button>
+        </div>
+
+        <!-- Step 2: Topics -->
+        <div class="settings-step" style="display: none;">
+            <div class="step-indicator">Step 2 of 3: Topics</div>
+            <div class="topic-list" style="margin-top: 8px;">
+                <div class="topic-item" style="display: flex; align-items: center; margin-bottom: 8px;">
+                    <input type="text" class="shadcn-input" placeholder="Enter topic 1" style="flex: 1; margin: 0;">
+                    <button class="shadcn-small-button" style="margin-left: 8px; padding: 6px;">+</button>
+                </div>
+            </div>
+            <div class="tooltip" style="margin-top: 4px;">
+                <span class="tooltip-text" style="font-size: 11px;">Add main topics you want to cover in your presentation</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 12px;">
+                <button class="shadcn-small-button" style="width: auto;">← Back</button>
+                <button class="shadcn-small-button" style="width: auto;">Next →</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Tone & Style -->
+        <div class="settings-step" style="display: none;">
+            <div class="step-indicator">Step 3 of 3: Tone & Style</div>
+            <select class="shadcn-dropdown" style="margin-top: 8px;">
+                <option value="professional">Professional</option>
+                <option value="casual">Casual</option>
+                <option value="technical">Technical</option>
+                <option value="creative">Creative</option>
+            </select>
+            <div class="tooltip" style="margin-top: 4px;">
+                <span class="tooltip-text" style="font-size: 11px;">Choose the overall tone for your presentation</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 12px;">
+                <button class="shadcn-small-button" style="width: auto;">← Back</button>
+                <button class="shadcn-small-button" style="width: auto;">Finish</button>
+            </div>
+        </div>
+
+        <!-- Generate Button with Spinner -->
+        <button class="shadcn-button"><span class="spinner"></span>Generating...</button>
+        <button class="shadcn-button" style="display: none;">Generate</button> <!-- Hidden for static demo -->
+
+        <!-- Error Alert -->
+        <div class="alert">Please enter a description to generate slides.</div>
+
+        <!-- Preview Section -->
+        <div class="section-header">
+            <span>Preview</span>
+            <span class="chevron">▼</span>
+        </div>
+        <div class="preview-section">
+            <div class="preview-slide">
+                <div class="preview-thumbnail">T</div>
+                <span>Slide 1: Title</span>
+            </div>
+            <div class="preview-slide">
+                <div class="preview-thumbnail">• • •</div>
+                <span>Slide 2: Problem</span>
+            </div>
+            <button class="shadcn-button">Insert</button>
+        </div>
+
+        <!-- Suggestion Section -->
+        <div class="section-header">
+            <span>Suggestions</span>
+            <span class="chevron">▼</span>
+        </div>
+        <div class="suggestion-section">
+            <div class="suggestion-carousel">
+                <div class="suggestion-item">
+                    <span>Team Intro</span>
+                    <button class="shadcn-small-button">Add</button>
+                </div>
+                <div class="suggestion-item">
+                    <span>Call to Action</span>
+                    <button class="shadcn-small-button">Add</button>
+                </div>
+                <div class="suggestion-item">
+                    <span>Stats</span>
+                    <button class="shadcn-small-button">Add</button>
+                </div>
+            </div>
+            <div class="carousel-controls">
+                <button class="carousel-arrow">←</button>
+                <button class="carousel-arrow">→</button>
+            </div>
+        </div>
+
+        <!-- Edit Section -->
+        <div class="section-header">
+            <span>Edit Slide</span>
+            <span class="chevron">▼</span>
+        </div>
+        <div class="edit-section">
+            <div class="edit-header">
+                <span><span class="lock-icon">🔒</span>Slide 1: Title</span>
+                <button class="shadcn-small-button">Unlock</button>
+            </div>
+            <input type="text" class="shadcn-input" placeholder="Tweak this slide (e.g., 'Add subtitle')">
+            <button class="shadcn-small-button" style="margin-top: 8px;">Enhance</button>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Slide Generator v1.0 | <a href="#">Support</a></p>
+        </div>
+
+        <!-- Help Icon -->
+        <div class="tooltip" style="position: absolute; bottom: 60px; right: 16px;">
+            <span style="font-size: 16px; color: #6b7280;">?</span>
+            <span class="tooltip-text">Use simple sentences like 'Title slide, then benefits list' for best results.</span>
+        </div>
+    </div>
+
+    <!-- API Keys Panel -->
+    <div class="api-keys-panel">
+        <div class="api-keys-header">
+            <h2 class="api-keys-title">API keys</h2>
+            <button class="close-panel">×</button>
+        </div>
+        <div class="api-keys-content">
+            <!-- OpenAI -->
+            <div class="api-key-item" data-provider="openai">
+                <div class="api-key-label">
+                    <img src="https://cdn.oaistatic.com/_next/static/media/favicon-32x32.be48395e.png" alt="OpenAI" class="provider-logo">
+                    <span>OpenAI API key</span>
+                </div>
+                <div class="api-key-input">
+                    <input type="password" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx" class="api-input">
+                    <button class="save-key">Save</button>
+                </div>
+            </div>
+
+            <!-- Perplexity -->
+            <div class="api-key-item" data-provider="perplexity">
+                <div class="api-key-label">
+                    <img src="https://www.perplexity.ai/favicon.ico" alt="Perplexity" class="provider-logo">
+                    <span>Perplexity API key</span>
+                    <span class="beta-badge">BETA</span>
+                </div>
+                <div class="api-key-input">
+                    <input type="password" placeholder="pplx-xxxxxxxxxxxxxxxxxxxxxxxx" class="api-input">
+                    <button class="save-key">Save</button>
+                </div>
+            </div>
+
+            <!-- xAI -->
+            <div class="api-key-item" data-provider="xai">
+                <div class="api-key-label">
+                    <img src="https://xai.com/favicon.ico" alt="xAI" class="provider-logo">
+                    <span>xAI API key</span>
+                    <span class="beta-badge">BETA</span>
+                </div>
+                <div class="api-key-input">
+                    <input type="password" placeholder="xai-xxxxxxxxxxxxxxxxxxxxxxxx" class="api-input">
+                    <button class="save-key">Save</button>
+                </div>
+            </div>
+
+            <!-- Anthropic -->
+            <div class="api-key-item" data-provider="anthropic">
+                <div class="api-key-label">
+                    <img src="https://www.anthropic.com/favicon.ico" alt="Anthropic" class="provider-logo">
+                    <span>Anthropic API key</span>
+                    <span class="beta-badge">BETA</span>
+                </div>
+                <div class="api-key-input">
+                    <input type="password" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx" class="api-input">
+                    <button class="save-key">Save</button>
+                </div>
+            </div>
+
+            <!-- Gemini -->
+            <div class="api-key-item" data-provider="gemini">
+                <div class="api-key-label">
+                    <img src="https://www.gstatic.com/lamda/images/favicon_v1_150160cddff7f294ce30.svg" alt="Gemini" class="provider-logo">
+                    <span>Gemini API key</span>
+                    <span class="beta-badge">BETA</span>
+                </div>
+                <div class="api-key-input">
+                    <input type="password" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx" class="api-input">
+                    <button class="save-key">Save</button>
+                </div>
+            </div>
+
+            <!-- OpenRouter -->
+            <div class="api-key-item" data-provider="openrouter">
+                <div class="api-key-label">
+                    <img src="https://openrouter.ai/favicon.ico" alt="OpenRouter" class="provider-logo">
+                    <span>OpenRouter API key</span>
+                    <span class="beta-badge">BETA</span>
+                </div>
+                <div class="api-key-input">
+                    <input type="password" placeholder="sk-or-xxxxxxxxxxxxxxxxxxxxxxxx" class="api-input">
+                    <button class="save-key">Save</button>
+                </div>
+            </div>
+
+            <!-- DeepSeek -->
+            <div class="api-key-item" data-provider="deepseek">
+                <div class="api-key-label">
+                    <img src="https://www.deepseek.com/_next/static/media/logo.0cc1832b.svg" alt="DeepSeek" class="provider-logo">
+                    <span>DeepSeek API key</span>
+                    <span class="beta-badge">BETA</span>
+                </div>
+                <div class="api-key-input">
+                    <input type="password" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx" class="api-input">
+                    <button class="save-key">Save</button>
+                </div>
+                <p class="api-key-notice">
+                    DeepSeek should not be used in regions where its use is prohibited. When its use is allowed, avoid sharing personal, confidential, or sensitive information.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Multi-step form handling
+        const steps = document.querySelectorAll('.settings-step');
+        const nextButtons = document.querySelectorAll('.shadcn-small-button');
+        let currentStep = 0;
+
+        // Next button click handlers
+        nextButtons.forEach(button => {
+            if (button.textContent.includes('Next') || button.textContent.includes('Finish')) {
+                button.addEventListener('click', () => {
+                    if (currentStep < steps.length - 1) {
+                        steps[currentStep].style.display = 'none';
+                        steps[currentStep].classList.remove('active');
+                        currentStep++;
+                        steps[currentStep].style.display = 'block';
+                        steps[currentStep].classList.add('active');
+                    }
+                });
+            } else if (button.textContent.includes('Back')) {
+                button.addEventListener('click', () => {
+                    if (currentStep > 0) {
+                        steps[currentStep].style.display = 'none';
+                        steps[currentStep].classList.remove('active');
+                        currentStep--;
+                        steps[currentStep].style.display = 'block';
+                        steps[currentStep].classList.add('active');
+                    }
+                });
+            }
+        });
+
+        // Topic list handling
+        const topicList = document.querySelector('.topic-list');
+        let topicCount = 1;
+
+        document.querySelectorAll('.topic-item button').forEach(button => {
+            button.addEventListener('click', () => {
+                topicCount++;
+                const newTopic = document.createElement('div');
+                newTopic.className = 'topic-item';
+                newTopic.style.display = 'flex';
+                newTopic.style.alignItems = 'center';
+                newTopic.style.marginBottom = '8px';
+                newTopic.innerHTML = `
+                    <input type="text" class="shadcn-input" placeholder="Enter topic ${topicCount}" style="flex: 1; margin: 0;">
+                    <button class="shadcn-small-button" style="margin-left: 8px; padding: 6px;">-</button>
+                `;
+                topicList.appendChild(newTopic);
+
+                // Add remove handler for the new topic
+                newTopic.querySelector('button').addEventListener('click', () => {
+                    newTopic.remove();
+                });
+            });
+        });
+
+        // Character counter
+        const input = document.querySelector('.shadcn-input');
+        const counter = document.querySelector('.char-counter');
+        
+        input.addEventListener('input', () => {
+            const count = input.value.length;
+            counter.textContent = `${count}/200`;
+            if (count > 180) {
+                counter.classList.add('near-limit');
+            } else {
+                counter.classList.remove('near-limit');
+            }
+        });
+
+        // Hamburger menu functionality
+        const hamburgerButton = document.querySelector('.hamburger-menu');
+        const hamburgerSidebar = document.getElementById('hamburgerSidebar');
+        const closeHamburger = document.querySelector('.close-hamburger');
+        const overlay = document.querySelector('.overlay');
+        const apiKeysMenuItem = document.getElementById('apiKeysMenuItem');
+        const apiKeysPanel = document.querySelector('.api-keys-panel');
+        const closePanel = document.querySelector('.close-panel');
+
+        // Open hamburger menu
+        hamburgerButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            hamburgerSidebar.classList.add('active');
+            overlay.classList.add('active');
+        });
+
+        // Close hamburger menu
+        closeHamburger.addEventListener('click', () => {
+            hamburgerSidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+
+        // API Keys menu item click
+        apiKeysMenuItem.addEventListener('click', (e) => {
+            e.stopPropagation();
+            hamburgerSidebar.classList.remove('active'); // Close hamburger menu
+            apiKeysPanel.classList.add('active'); // Open API panel
+            overlay.classList.add('active');
+        });
+
+        // Close API panel
+        closePanel.addEventListener('click', () => {
+            apiKeysPanel.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+
+        // Overlay click handler
+        overlay.addEventListener('click', () => {
+            hamburgerSidebar.classList.remove('active');
+            apiKeysPanel.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+
+        // Prevent clicks inside panels from closing
+        hamburgerSidebar.addEventListener('click', (e) => e.stopPropagation());
+        apiKeysPanel.addEventListener('click', (e) => e.stopPropagation());
+
+        // Save API key functionality
+        document.querySelectorAll('.save-key').forEach(button => {
+            button.addEventListener('click', function() {
+                const input = this.previousElementSibling;
+                if (input.value) {
+                    button.textContent = 'Saved!';
+                    setTimeout(() => {
+                        button.textContent = 'Save';
+                    }, 2000);
+                }
+            });
+        });
+
+        // Load saved API keys
+        loadApiKeys();
+        
+        // Load saved model preference
+        loadModelPreference();
+
+        // Update model preference when changed
+        const modelDropdown = document.querySelector('.model-dropdown');
+        modelDropdown.addEventListener('change', function() {
+            console.log('Selected model:', this.value);
+            updateModelPreferenceOnServer(this.value);
+        });
+
+        // Handle generate button click
+        const generateButton = document.querySelector('.shadcn-button:not([style*="display: none"])');
+        if (generateButton) {
+            generateButton.addEventListener('click', function() {
+                // Show loading state
+                this.innerHTML = '<span class="spinner"></span>Generating...';
+                
+                // Collect parameters
+                const params = {
+                    slideType: document.querySelector('.shadcn-dropdown').value,
+                    description: document.querySelector('.shadcn-input').value,
+                    model: document.querySelector('.model-dropdown').value,
+                    // Add other parameters as needed
+                };
+
+                // Call server-side generation
+                generateSlidesFromServer(params);
+            });
+        }
+
+        // Handle API key saving
+        document.querySelectorAll('.save-key').forEach(button => {
+            button.addEventListener('click', function() {
+                const apiKeyItem = this.closest('.api-key-item');
+                const provider = apiKeyItem.dataset.provider;
+                const input = apiKeyItem.querySelector('.api-input');
+                
+                if (input.value) {
+                    saveApiKeyToServer(provider, input.value);
+                }
+            });
+        });
+    });
+</script>
+</html> 
