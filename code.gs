@@ -3,21 +3,18 @@
  */
 function onOpen() {
   SlidesApp.getUi()
-    .createMenu('🎯 Slide Generator')
-    .addItem('Open Generator', 'showSlideGeneratorSidebar')
-    .addSeparator()
-    .addItem('About', 'showAbout')
+    .createMenu('Slide Generator')
+    .addItem('Open Sidebar', 'showSidebar')
     .addToUi();
 }
 
 /**
  * Shows the Slide Generator sidebar.
  */
-function showSlideGeneratorSidebar() {
+function showSidebar() {
   const html = HtmlService.createHtmlOutputFromFile('Sidebar')
     .setTitle('Slide Generator')
-    .setWidth(350); // Set width to accommodate the design
-
+    .setWidth(400);
   SlidesApp.getUi().showSidebar(html);
 }
 
@@ -62,53 +59,182 @@ function generateSlides(params) {
   }
 }
 
+// Constants for API key storage
+const API_KEY_PREFIX = 'API_KEY_';
+const MODEL_PREFERENCE_KEY = 'MODEL_PREFERENCE';
+const DEFAULT_MODEL = 'openai';
+
+// API Providers configuration
+const API_PROVIDERS = {
+  openai: {
+    name: 'OpenAI',
+    validateUrl: 'https://api.openai.com/v1/models',
+    headers: (key) => ({ 'Authorization': `Bearer ${key}` })
+  },
+  perplexity: {
+    name: 'Perplexity',
+    validateUrl: 'https://api.perplexity.ai/chat/completions',
+    headers: (key) => ({ 'Authorization': `Bearer ${key}` })
+  },
+  anthropic: {
+    name: 'Anthropic',
+    validateUrl: 'https://api.anthropic.com/v1/messages',
+    headers: (key) => ({ 'x-api-key': key })
+  },
+  gemini: {
+    name: 'Google Gemini',
+    validateUrl: 'https://generativelanguage.googleapis.com/v1beta/models',
+    headers: (key) => ({ 'x-goog-api-key': key })
+  },
+  openrouter: {
+    name: 'OpenRouter',
+    validateUrl: 'https://openrouter.ai/api/v1/models',
+    headers: (key) => ({ 'Authorization': `Bearer ${key}` })
+  },
+  deepseek: {
+    name: 'DeepSeek',
+    validateUrl: 'https://api.deepseek.com/v1/models',
+    headers: (key) => ({ 'Authorization': `Bearer ${key}` })
+  }
+};
+
 /**
- * Saves an API key securely in the user's script properties.
+ * Saves an API key for a specific provider
  * @param {string} provider - The API provider name
  * @param {string} apiKey - The API key to save
- * @return {Object} The save result
+ * @returns {Object} Result object with success status and message
  */
 function saveApiKey(provider, apiKey) {
   try {
-    // Get user's script properties
-    const userProperties = PropertiesService.getUserProperties();
-    
-    // Save the API key with the provider as the key
-    userProperties.setProperty('apiKey_' + provider, apiKey);
-    
-    return {
-      success: true,
-      message: 'API key saved successfully'
-    };
+    // Validate provider
+    if (!API_PROVIDERS[provider]) {
+      return { success: false, message: 'Invalid provider' };
+    }
+
+    // Validate API key format (basic check)
+    if (!apiKey || apiKey.trim().length < 8) {
+      return { success: false, message: 'Invalid API key format' };
+    }
+
+    // Store the API key
+    PropertiesService.getUserProperties().setProperty(
+      `${API_KEY_PREFIX}${provider}`,
+      apiKey
+    );
+
+    return { success: true, message: 'API key saved successfully' };
   } catch (error) {
     console.error('Error saving API key:', error);
-    return {
-      success: false,
-      message: 'Failed to save API key: ' + error.message
-    };
+    return { success: false, message: 'Failed to save API key' };
   }
 }
 
 /**
- * Retrieves a saved API key for a provider.
+ * Retrieves an API key for a specific provider
  * @param {string} provider - The API provider name
- * @return {Object} The retrieval result
+ * @returns {Object} Result object with success status and API key
  */
 function getApiKey(provider) {
   try {
-    const userProperties = PropertiesService.getUserProperties();
-    const apiKey = userProperties.getProperty('apiKey_' + provider);
-    
-    return {
-      success: true,
-      apiKey: apiKey || ''
-    };
+    const apiKey = PropertiesService.getUserProperties().getProperty(
+      `${API_KEY_PREFIX}${provider}`
+    );
+    return { success: true, apiKey: apiKey || '' };
   } catch (error) {
     console.error('Error retrieving API key:', error);
-    return {
-      success: false,
-      message: 'Failed to retrieve API key: ' + error.message
+    return { success: false, message: 'Failed to retrieve API key' };
+  }
+}
+
+/**
+ * Validates an API key with the provider's API
+ * @param {string} provider - The API provider name
+ * @param {string} apiKey - The API key to validate
+ * @returns {Object} Result object with validation status
+ */
+function validateApiKey(provider, apiKey) {
+  try {
+    const providerConfig = API_PROVIDERS[provider];
+    if (!providerConfig) {
+      return { success: false, message: 'Invalid provider' };
+    }
+
+    const options = {
+      method: 'GET',
+      headers: providerConfig.headers(apiKey),
+      muteHttpExceptions: true
     };
+
+    const response = UrlFetchApp.fetch(providerConfig.validateUrl, options);
+    const statusCode = response.getResponseCode();
+
+    if (statusCode === 200 || statusCode === 201) {
+      return { success: true, message: 'API key is valid' };
+    } else {
+      return { success: false, message: 'Invalid API key' };
+    }
+  } catch (error) {
+    console.error('Error validating API key:', error);
+    return { success: false, message: 'Failed to validate API key' };
+  }
+}
+
+/**
+ * Updates the preferred model for slide generation
+ * @param {string} model - The model identifier
+ * @returns {Object} Result object with success status
+ */
+function updateModelPreference(model) {
+  try {
+    if (!API_PROVIDERS[model]) {
+      return { success: false, message: 'Invalid model' };
+    }
+
+    PropertiesService.getUserProperties().setProperty(
+      MODEL_PREFERENCE_KEY,
+      model
+    );
+    return { success: true, message: 'Model preference updated' };
+  } catch (error) {
+    console.error('Error updating model preference:', error);
+    return { success: false, message: 'Failed to update model preference' };
+  }
+}
+
+/**
+ * Gets the currently preferred model
+ * @returns {Object} Result object with success status and model preference
+ */
+function getModelPreference() {
+  try {
+    const model = PropertiesService.getUserProperties().getProperty(
+      MODEL_PREFERENCE_KEY
+    ) || DEFAULT_MODEL;
+    return { success: true, model: model };
+  } catch (error) {
+    console.error('Error getting model preference:', error);
+    return { success: false, message: 'Failed to get model preference' };
+  }
+}
+
+/**
+ * Deletes an API key for a specific provider
+ * @param {string} provider - The API provider name
+ * @returns {Object} Result object with success status
+ */
+function deleteApiKey(provider) {
+  try {
+    if (!API_PROVIDERS[provider]) {
+      return { success: false, message: 'Invalid provider' };
+    }
+
+    PropertiesService.getUserProperties().deleteProperty(
+      `${API_KEY_PREFIX}${provider}`
+    );
+    return { success: true, message: 'API key deleted successfully' };
+  } catch (error) {
+    console.error('Error deleting API key:', error);
+    return { success: false, message: 'Failed to delete API key' };
   }
 }
 
@@ -133,51 +259,6 @@ function insertSlides(slideData) {
     return {
       success: false,
       message: 'Failed to insert slides: ' + error.message
-    };
-  }
-}
-
-/**
- * Updates the user's model selection preference.
- * @param {string} model - The selected model
- * @return {Object} The update result
- */
-function updateModelPreference(model) {
-  try {
-    const userProperties = PropertiesService.getUserProperties();
-    userProperties.setProperty('preferred_model', model);
-    
-    return {
-      success: true,
-      message: 'Model preference updated'
-    };
-  } catch (error) {
-    console.error('Error updating model preference:', error);
-    return {
-      success: false,
-      message: 'Failed to update model preference: ' + error.message
-    };
-  }
-}
-
-/**
- * Gets the user's saved model preference.
- * @return {Object} The preference result
- */
-function getModelPreference() {
-  try {
-    const userProperties = PropertiesService.getUserProperties();
-    const model = userProperties.getProperty('preferred_model') || 'gpt-3.5-turbo';
-    
-    return {
-      success: true,
-      model: model
-    };
-  } catch (error) {
-    console.error('Error getting model preference:', error);
-    return {
-      success: false,
-      message: 'Failed to get model preference: ' + error.message
     };
   }
 } 
