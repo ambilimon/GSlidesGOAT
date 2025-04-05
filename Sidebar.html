@@ -609,6 +609,172 @@
             color: #6b7280;
             line-height: 1.5;
         }
+        /* API Keys Panel Styles */
+        .api-keys-panel {
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-top: 16px;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .api-keys-header {
+            padding: 12px 16px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .api-keys-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .api-keys-content {
+            padding: 16px;
+        }
+        
+        .api-key-group {
+            margin-bottom: 16px;
+        }
+        
+        .api-key-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        
+        .api-key-name {
+            font-size: 13px;
+            color: #4b5563;
+        }
+        
+        .api-key-status {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: #f3f4f6;
+        }
+        
+        .api-key-status.valid {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .api-key-status.invalid {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .api-key-status.validating {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .api-key-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #374151;
+            transition: all 0.2s;
+        }
+        
+        .api-key-input:focus {
+            outline: none;
+            border-color: #4285f4;
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+        }
+        
+        .api-key-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .api-key-button {
+            flex: 1;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .save-button {
+            background: #4285f4;
+            color: white;
+        }
+        
+        .save-button:hover {
+            background: #3267d6;
+        }
+        
+        .delete-button {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        
+        .delete-button:hover {
+            background: #e5e7eb;
+        }
+        
+        .model-preference {
+            margin-top: 24px;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .model-preference-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+        
+        .model-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #374151;
+            background: white;
+            cursor: pointer;
+        }
+        
+        .model-select:focus {
+            outline: none;
+            border-color: #4285f4;
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f4f6;
+            border-radius: 50%;
+            border-top-color: #4285f4;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
     <!-- Google Apps Script includes -->
     <?!= HtmlService.createHtmlOutput().getContent(); ?>
@@ -897,82 +1063,111 @@
     <!-- API Keys Panel -->
     <div class="api-keys-panel" id="apiKeysPanel">
         <div class="api-keys-header">
-            <h2 class="api-keys-title">API Keys</h2>
-            <button class="close-panel" onclick="closeApiKeysPanel()">×</button>
+            <span class="api-keys-title">API Keys Management</span>
+            <button onclick="closeApiKeysPanel()" class="close-button">&times;</button>
         </div>
         <div class="api-keys-content">
             <!-- OpenAI -->
-            <div class="api-key-item" data-provider="openai">
+            <div class="api-key-group">
                 <div class="api-key-label">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg" alt="OpenAI" class="provider-logo">
-                    <span>OpenAI API Key</span>
+                    <span class="api-key-name">OpenAI API Key</span>
+                    <span class="api-key-status" id="openaiStatus">Not set</span>
                 </div>
-                <div class="api-key-input">
-                    <input type="password" class="api-input" placeholder="sk-..." spellcheck="false">
-                    <button class="save-key" onclick="saveApiKey('openai')">Save</button>
+                <input type="password" class="api-key-input" id="openaiKey" placeholder="Enter OpenAI API key">
+                <div class="api-key-actions">
+                    <button class="api-key-button save-button" onclick="saveApiKey('openai')">
+                        <span class="button-content">Save</span>
+                    </button>
+                    <button class="api-key-button delete-button" onclick="deleteApiKey('openai')">Delete</button>
                 </div>
             </div>
-
+            
             <!-- Perplexity -->
-            <div class="api-key-item" data-provider="perplexity">
+            <div class="api-key-group">
                 <div class="api-key-label">
-                    <img src="https://www.perplexity.ai/favicon.ico" alt="Perplexity" class="provider-logo">
-                    <span>Perplexity API Key</span>
-                    <span class="beta-badge">Beta</span>
+                    <span class="api-key-name">Perplexity API Key</span>
+                    <span class="api-key-status" id="perplexityStatus">Not set</span>
                 </div>
-                <div class="api-key-input">
-                    <input type="password" class="api-input" placeholder="pplx-..." spellcheck="false">
-                    <button class="save-key" onclick="saveApiKey('perplexity')">Save</button>
+                <input type="password" class="api-key-input" id="perplexityKey" placeholder="Enter Perplexity API key">
+                <div class="api-key-actions">
+                    <button class="api-key-button save-button" onclick="saveApiKey('perplexity')">
+                        <span class="button-content">Save</span>
+                    </button>
+                    <button class="api-key-button delete-button" onclick="deleteApiKey('perplexity')">Delete</button>
                 </div>
             </div>
-
+            
             <!-- Anthropic -->
-            <div class="api-key-item" data-provider="anthropic">
+            <div class="api-key-group">
                 <div class="api-key-label">
-                    <img src="https://www.anthropic.com/favicon.ico" alt="Anthropic" class="provider-logo">
-                    <span>Anthropic API Key</span>
+                    <span class="api-key-name">Anthropic API Key</span>
+                    <span class="api-key-status" id="anthropicStatus">Not set</span>
                 </div>
-                <div class="api-key-input">
-                    <input type="password" class="api-input" placeholder="sk-ant-..." spellcheck="false">
-                    <button class="save-key" onclick="saveApiKey('anthropic')">Save</button>
+                <input type="password" class="api-key-input" id="anthropicKey" placeholder="Enter Anthropic API key">
+                <div class="api-key-actions">
+                    <button class="api-key-button save-button" onclick="saveApiKey('anthropic')">
+                        <span class="button-content">Save</span>
+                    </button>
+                    <button class="api-key-button delete-button" onclick="deleteApiKey('anthropic')">Delete</button>
                 </div>
             </div>
-
+            
             <!-- Gemini -->
-            <div class="api-key-item" data-provider="gemini">
+            <div class="api-key-group">
                 <div class="api-key-label">
-                    <img src="https://www.gstatic.com/lamda/images/favicon_v1_150160cddff7f294ce30.svg" alt="Gemini" class="provider-logo">
-                    <span>Google Gemini API Key</span>
+                    <span class="api-key-name">Google Gemini API Key</span>
+                    <span class="api-key-status" id="geminiStatus">Not set</span>
                 </div>
-                <div class="api-key-input">
-                    <input type="password" class="api-input" placeholder="AIza..." spellcheck="false">
-                    <button class="save-key" onclick="saveApiKey('gemini')">Save</button>
+                <input type="password" class="api-key-input" id="geminiKey" placeholder="Enter Gemini API key">
+                <div class="api-key-actions">
+                    <button class="api-key-button save-button" onclick="saveApiKey('gemini')">
+                        <span class="button-content">Save</span>
+                    </button>
+                    <button class="api-key-button delete-button" onclick="deleteApiKey('gemini')">Delete</button>
                 </div>
             </div>
-
+            
             <!-- OpenRouter -->
-            <div class="api-key-item" data-provider="openrouter">
+            <div class="api-key-group">
                 <div class="api-key-label">
-                    <img src="https://openrouter.ai/favicon.ico" alt="OpenRouter" class="provider-logo">
-                    <span>OpenRouter API Key</span>
+                    <span class="api-key-name">OpenRouter API Key</span>
+                    <span class="api-key-status" id="openrouterStatus">Not set</span>
                 </div>
-                <div class="api-key-input">
-                    <input type="password" class="api-input" placeholder="sk-or-..." spellcheck="false">
-                    <button class="save-key" onclick="saveApiKey('openrouter')">Save</button>
+                <input type="password" class="api-key-input" id="openrouterKey" placeholder="Enter OpenRouter API key">
+                <div class="api-key-actions">
+                    <button class="api-key-button save-button" onclick="saveApiKey('openrouter')">
+                        <span class="button-content">Save</span>
+                    </button>
+                    <button class="api-key-button delete-button" onclick="deleteApiKey('openrouter')">Delete</button>
                 </div>
             </div>
-
+            
             <!-- DeepSeek -->
-            <div class="api-key-item" data-provider="deepseek">
+            <div class="api-key-group">
                 <div class="api-key-label">
-                    <img src="https://www.deepseek.com/favicon.ico" alt="DeepSeek" class="provider-logo">
-                    <span>DeepSeek API Key</span>
-                    <span class="beta-badge">Beta</span>
+                    <span class="api-key-name">DeepSeek API Key</span>
+                    <span class="api-key-status" id="deepseekStatus">Not set</span>
                 </div>
-                <div class="api-key-input">
-                    <input type="password" class="api-input" placeholder="sk-..." spellcheck="false">
-                    <button class="save-key" onclick="saveApiKey('deepseek')">Save</button>
+                <input type="password" class="api-key-input" id="deepseekKey" placeholder="Enter DeepSeek API key">
+                <div class="api-key-actions">
+                    <button class="api-key-button save-button" onclick="saveApiKey('deepseek')">
+                        <span class="button-content">Save</span>
+                    </button>
+                    <button class="api-key-button delete-button" onclick="deleteApiKey('deepseek')">Delete</button>
                 </div>
+            </div>
+            
+            <!-- Model Preference -->
+            <div class="model-preference">
+                <div class="model-preference-title">Preferred Model</div>
+                <select class="model-select" id="modelPreference" onchange="updateModelPreference()">
+                    <option value="openai">OpenAI</option>
+                    <option value="perplexity">Perplexity</option>
+                    <option value="anthropic">Anthropic</option>
+                    <option value="gemini">Google Gemini</option>
+                    <option value="openrouter">OpenRouter</option>
+                    <option value="deepseek">DeepSeek</option>
+                </select>
             </div>
         </div>
     </div>
@@ -1143,61 +1338,151 @@
 
         // API Keys Panel Functions
         function openApiKeysPanel() {
-            document.getElementById('apiKeysPanel').classList.add('active');
-            loadApiKeys(); // Load saved API keys
+            document.getElementById('apiKeysPanel').style.display = 'block';
+            loadSavedApiKeys();
+            loadModelPreference();
         }
-
+        
         function closeApiKeysPanel() {
-            document.getElementById('apiKeysPanel').classList.remove('active');
+            document.getElementById('apiKeysPanel').style.display = 'none';
         }
-
-        function saveApiKey(provider) {
-            const container = document.querySelector(`[data-provider="${provider}"]`);
-            const input = container.querySelector('.api-input');
-            const button = container.querySelector('.save-key');
-            const apiKey = input.value.trim();
-
-            if (!apiKey) {
-                alert('Please enter an API key');
-                return;
-            }
-
-            // Show loading state
-            button.textContent = 'Saving...';
-            button.disabled = true;
-
-            // Call server-side function to save the API key
-            google.script.run
-                .withSuccessHandler(function(result) {
-                    if (result.success) {
-                        button.textContent = 'Saved!';
-                        setTimeout(() => {
-                            button.textContent = 'Save';
-                            button.disabled = false;
-                        }, 2000);
-                    } else {
-                        alert(result.message || 'Failed to save API key');
-                        button.textContent = 'Save';
-                        button.disabled = false;
-                    }
-                })
-                .withFailureHandler(function(error) {
-                    console.error('Error saving API key:', error);
-                    alert('Failed to save API key');
-                    button.textContent = 'Save';
-                    button.disabled = false;
-                })
-                .saveApiKey(provider, apiKey);
-        }
-
-        // Close panel when clicking outside
-        document.addEventListener('click', function(event) {
-            const panel = document.getElementById('apiKeysPanel');
-            const isClickInside = panel.contains(event.target);
-            const isClickOnMenuItem = event.target.closest('.hamburger-sidebar-item[data-action="api-keys"]');
+        
+        async function saveApiKey(provider) {
+            const keyInput = document.getElementById(`${provider}Key`);
+            const statusElement = document.getElementById(`${provider}Status`);
+            const buttonContent = document.querySelector(`[onclick="saveApiKey('${provider}')"] .button-content`);
             
-            if (!isClickInside && !isClickOnMenuItem && panel.classList.contains('active')) {
-                closeApiKeysPanel();
+            try {
+                // Show loading state
+                statusElement.textContent = 'Validating...';
+                statusElement.className = 'api-key-status validating';
+                buttonContent.innerHTML = '<span class="loading-spinner"></span>Saving';
+                
+                // Save and validate the API key
+                const result = await google.script.run
+                    .withSuccessHandler(onSaveSuccess)
+                    .withFailureHandler(onSaveError)
+                    .saveApiKey(provider, keyInput.value);
+                
+                function onSaveSuccess(result) {
+                    if (result.success) {
+                        statusElement.textContent = 'Valid';
+                        statusElement.className = 'api-key-status valid';
+                    } else {
+                        statusElement.textContent = 'Invalid';
+                        statusElement.className = 'api-key-status invalid';
+                    }
+                    buttonContent.textContent = 'Save';
+                }
+                
+                function onSaveError(error) {
+                    statusElement.textContent = 'Error';
+                    statusElement.className = 'api-key-status invalid';
+                    buttonContent.textContent = 'Save';
+                    console.error('Error saving API key:', error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                statusElement.textContent = 'Error';
+                statusElement.className = 'api-key-status invalid';
+                buttonContent.textContent = 'Save';
+            }
+        }
+        
+        async function deleteApiKey(provider) {
+            const statusElement = document.getElementById(`${provider}Status`);
+            const keyInput = document.getElementById(`${provider}Key`);
+            
+            try {
+                const result = await google.script.run
+                    .withSuccessHandler(onDeleteSuccess)
+                    .withFailureHandler(onDeleteError)
+                    .deleteApiKey(provider);
+                
+                function onDeleteSuccess(result) {
+                    if (result.success) {
+                        statusElement.textContent = 'Not set';
+                        statusElement.className = 'api-key-status';
+                        keyInput.value = '';
+                    }
+                }
+                
+                function onDeleteError(error) {
+                    console.error('Error deleting API key:', error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        async function loadSavedApiKeys() {
+            const providers = ['openai', 'perplexity', 'anthropic', 'gemini', 'openrouter', 'deepseek'];
+            
+            for (const provider of providers) {
+                try {
+                    const result = await google.script.run
+                        .withSuccessHandler((result) => {
+                            const statusElement = document.getElementById(`${provider}Status`);
+                            if (result.success && result.apiKey) {
+                                statusElement.textContent = 'Saved';
+                                statusElement.className = 'api-key-status valid';
+                            } else {
+                                statusElement.textContent = 'Not set';
+                                statusElement.className = 'api-key-status';
+                            }
+                        })
+                        .withFailureHandler((error) => {
+                            console.error(`Error loading ${provider} API key:`, error);
+                        })
+                        .getApiKey(provider);
+                } catch (error) {
+                    console.error(`Error loading ${provider} API key:`, error);
+                }
+            }
+        }
+        
+        async function updateModelPreference() {
+            const select = document.getElementById('modelPreference');
+            
+            try {
+                const result = await google.script.run
+                    .withSuccessHandler((result) => {
+                        if (!result.success) {
+                            console.error('Failed to update model preference');
+                        }
+                    })
+                    .withFailureHandler((error) => {
+                        console.error('Error updating model preference:', error);
+                    })
+                    .updateModelPreference(select.value);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        async function loadModelPreference() {
+            try {
+                const result = await google.script.run
+                    .withSuccessHandler((result) => {
+                        if (result.success) {
+                            document.getElementById('modelPreference').value = result.model;
+                        }
+                    })
+                    .withFailureHandler((error) => {
+                        console.error('Error loading model preference:', error);
+                    })
+                    .getModelPreference();
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved API keys and model preference when the panel is opened
+            const apiKeysButton = document.querySelector('[onclick="openApiKeysPanel()"]');
+            if (apiKeysButton) {
+                apiKeysButton.addEventListener('click', openApiKeysPanel);
             }
         });
     });
