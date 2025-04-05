@@ -895,21 +895,21 @@
     </div>
 
     <!-- API Keys Panel -->
-    <div class="api-keys-panel">
+    <div class="api-keys-panel" id="apiKeysPanel">
         <div class="api-keys-header">
-            <h2 class="api-keys-title">API keys</h2>
-            <button class="close-panel">×</button>
+            <h2 class="api-keys-title">API Keys</h2>
+            <button class="close-panel" onclick="closeApiKeysPanel()">×</button>
         </div>
         <div class="api-keys-content">
             <!-- OpenAI -->
             <div class="api-key-item" data-provider="openai">
                 <div class="api-key-label">
-                    <img src="https://cdn.oaistatic.com/_next/static/media/favicon-32x32.be48395e.png" alt="OpenAI" class="provider-logo">
-                    <span>OpenAI API key</span>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg" alt="OpenAI" class="provider-logo">
+                    <span>OpenAI API Key</span>
                 </div>
                 <div class="api-key-input">
-                    <input type="password" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx" class="api-input">
-                    <button class="save-key">Save</button>
+                    <input type="password" class="api-input" placeholder="sk-..." spellcheck="false">
+                    <button class="save-key" onclick="saveApiKey('openai')">Save</button>
                 </div>
             </div>
 
@@ -917,25 +917,12 @@
             <div class="api-key-item" data-provider="perplexity">
                 <div class="api-key-label">
                     <img src="https://www.perplexity.ai/favicon.ico" alt="Perplexity" class="provider-logo">
-                    <span>Perplexity API key</span>
-                    <span class="beta-badge">BETA</span>
+                    <span>Perplexity API Key</span>
+                    <span class="beta-badge">Beta</span>
                 </div>
                 <div class="api-key-input">
-                    <input type="password" placeholder="pplx-xxxxxxxxxxxxxxxxxxxxxxxx" class="api-input">
-                    <button class="save-key">Save</button>
-                </div>
-            </div>
-
-            <!-- xAI -->
-            <div class="api-key-item" data-provider="xai">
-                <div class="api-key-label">
-                    <img src="https://xai.com/favicon.ico" alt="xAI" class="provider-logo">
-                    <span>xAI API key</span>
-                    <span class="beta-badge">BETA</span>
-                </div>
-                <div class="api-key-input">
-                    <input type="password" placeholder="xai-xxxxxxxxxxxxxxxxxxxxxxxx" class="api-input">
-                    <button class="save-key">Save</button>
+                    <input type="password" class="api-input" placeholder="pplx-..." spellcheck="false">
+                    <button class="save-key" onclick="saveApiKey('perplexity')">Save</button>
                 </div>
             </div>
 
@@ -943,12 +930,11 @@
             <div class="api-key-item" data-provider="anthropic">
                 <div class="api-key-label">
                     <img src="https://www.anthropic.com/favicon.ico" alt="Anthropic" class="provider-logo">
-                    <span>Anthropic API key</span>
-                    <span class="beta-badge">BETA</span>
+                    <span>Anthropic API Key</span>
                 </div>
                 <div class="api-key-input">
-                    <input type="password" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx" class="api-input">
-                    <button class="save-key">Save</button>
+                    <input type="password" class="api-input" placeholder="sk-ant-..." spellcheck="false">
+                    <button class="save-key" onclick="saveApiKey('anthropic')">Save</button>
                 </div>
             </div>
 
@@ -956,12 +942,11 @@
             <div class="api-key-item" data-provider="gemini">
                 <div class="api-key-label">
                     <img src="https://www.gstatic.com/lamda/images/favicon_v1_150160cddff7f294ce30.svg" alt="Gemini" class="provider-logo">
-                    <span>Gemini API key</span>
-                    <span class="beta-badge">BETA</span>
+                    <span>Google Gemini API Key</span>
                 </div>
                 <div class="api-key-input">
-                    <input type="password" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx" class="api-input">
-                    <button class="save-key">Save</button>
+                    <input type="password" class="api-input" placeholder="AIza..." spellcheck="false">
+                    <button class="save-key" onclick="saveApiKey('gemini')">Save</button>
                 </div>
             </div>
 
@@ -969,29 +954,25 @@
             <div class="api-key-item" data-provider="openrouter">
                 <div class="api-key-label">
                     <img src="https://openrouter.ai/favicon.ico" alt="OpenRouter" class="provider-logo">
-                    <span>OpenRouter API key</span>
-                    <span class="beta-badge">BETA</span>
+                    <span>OpenRouter API Key</span>
                 </div>
                 <div class="api-key-input">
-                    <input type="password" placeholder="sk-or-xxxxxxxxxxxxxxxxxxxxxxxx" class="api-input">
-                    <button class="save-key">Save</button>
+                    <input type="password" class="api-input" placeholder="sk-or-..." spellcheck="false">
+                    <button class="save-key" onclick="saveApiKey('openrouter')">Save</button>
                 </div>
             </div>
 
             <!-- DeepSeek -->
             <div class="api-key-item" data-provider="deepseek">
                 <div class="api-key-label">
-                    <img src="https://www.deepseek.com/_next/static/media/logo.0cc1832b.svg" alt="DeepSeek" class="provider-logo">
-                    <span>DeepSeek API key</span>
-                    <span class="beta-badge">BETA</span>
+                    <img src="https://www.deepseek.com/favicon.ico" alt="DeepSeek" class="provider-logo">
+                    <span>DeepSeek API Key</span>
+                    <span class="beta-badge">Beta</span>
                 </div>
                 <div class="api-key-input">
-                    <input type="password" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx" class="api-input">
-                    <button class="save-key">Save</button>
+                    <input type="password" class="api-input" placeholder="sk-..." spellcheck="false">
+                    <button class="save-key" onclick="saveApiKey('deepseek')">Save</button>
                 </div>
-                <p class="api-key-notice">
-                    DeepSeek should not be used in regions where its use is prohibited. When its use is allowed, avoid sharing personal, confidential, or sensitive information.
-                </p>
             </div>
         </div>
     </div>
@@ -1160,17 +1141,64 @@
             });
         }
 
-        // Handle API key saving
-        document.querySelectorAll('.save-key').forEach(button => {
-            button.addEventListener('click', function() {
-                const apiKeyItem = this.closest('.api-key-item');
-                const provider = apiKeyItem.dataset.provider;
-                const input = apiKeyItem.querySelector('.api-input');
-                
-                if (input.value) {
-                    saveApiKeyToServer(provider, input.value);
-                }
-            });
+        // API Keys Panel Functions
+        function openApiKeysPanel() {
+            document.getElementById('apiKeysPanel').classList.add('active');
+            loadApiKeys(); // Load saved API keys
+        }
+
+        function closeApiKeysPanel() {
+            document.getElementById('apiKeysPanel').classList.remove('active');
+        }
+
+        function saveApiKey(provider) {
+            const container = document.querySelector(`[data-provider="${provider}"]`);
+            const input = container.querySelector('.api-input');
+            const button = container.querySelector('.save-key');
+            const apiKey = input.value.trim();
+
+            if (!apiKey) {
+                alert('Please enter an API key');
+                return;
+            }
+
+            // Show loading state
+            button.textContent = 'Saving...';
+            button.disabled = true;
+
+            // Call server-side function to save the API key
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    if (result.success) {
+                        button.textContent = 'Saved!';
+                        setTimeout(() => {
+                            button.textContent = 'Save';
+                            button.disabled = false;
+                        }, 2000);
+                    } else {
+                        alert(result.message || 'Failed to save API key');
+                        button.textContent = 'Save';
+                        button.disabled = false;
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    console.error('Error saving API key:', error);
+                    alert('Failed to save API key');
+                    button.textContent = 'Save';
+                    button.disabled = false;
+                })
+                .saveApiKey(provider, apiKey);
+        }
+
+        // Close panel when clicking outside
+        document.addEventListener('click', function(event) {
+            const panel = document.getElementById('apiKeysPanel');
+            const isClickInside = panel.contains(event.target);
+            const isClickOnMenuItem = event.target.closest('.hamburger-sidebar-item[data-action="api-keys"]');
+            
+            if (!isClickInside && !isClickOnMenuItem && panel.classList.contains('active')) {
+                closeApiKeysPanel();
+            }
         });
     });
 </script>
