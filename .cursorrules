@@ -1,0 +1,97 @@
+# GSlidesGOAT Project Rules and Patterns
+
+## Project Overview
+- Google Slides Add-on for AI-powered presentation generation
+- Multi-provider LLM support with API key management
+- Modern UI with ShadCN-inspired design
+
+## File Structure
+```
+├── appsscript.json    # Google Apps Script configuration
+├── Code.gs            # Main server-side logic
+├── Sidebar.html       # UI implementation
+└── .cursorrules       # Project guidelines
+```
+
+## Coding Standards
+
+### HTML/CSS
+- Use ShadCN-inspired components for consistent design
+- Follow BEM naming convention for CSS classes
+- Maintain responsive design principles
+- Support both light and dark themes
+
+### JavaScript
+- Use ES6+ features supported by Google Apps Script
+- Implement error handling for all API calls
+- Follow async/await patterns where applicable
+- Use descriptive variable and function names
+
+### Google Apps Script
+- Store sensitive data using PropertiesService
+- Use ScriptApp for OAuth scopes and permissions
+- Implement proper error handling and logging
+- Cache API responses when possible
+
+## API Integration Patterns
+- Store API keys securely in Script Properties
+- Validate API keys before saving
+- Implement rate limiting for API calls
+- Handle API errors gracefully
+- Support fallback providers
+
+## Security Guidelines
+- Never expose API keys in client-side code
+- Validate all user inputs
+- Use content security policies
+- Implement proper access controls
+- Regular security audits
+
+## UI/UX Patterns
+- Consistent loading states
+- Clear error messages
+- Progressive disclosure
+- Responsive feedback
+- Accessible design
+
+## State Management
+- Use Script Properties for persistent storage
+- Cache frequently accessed data
+- Clear state on user logout
+- Handle session timeouts
+
+## Error Handling
+- User-friendly error messages
+- Detailed server-side logging
+- Graceful degradation
+- Recovery procedures
+
+## Testing
+- Test API integrations
+- Validate user inputs
+- Check error scenarios
+- Performance testing
+
+## Version Control
+- Semantic versioning
+- Descriptive commit messages
+- Feature branch workflow
+- Regular backups
+
+## Documentation
+- Clear code comments
+- API documentation
+- User guides
+- Change logs
+
+## Performance
+- Minimize API calls
+- Optimize resource usage
+- Cache when possible
+- Monitor execution times
+
+## Deployment
+- Version tracking
+- Rollback procedures
+- Testing checklist
+- Update procedures 
